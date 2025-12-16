@@ -1,0 +1,91 @@
+# ==========================================
+# Dependencies
+# ==========================================
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ==========================================
+# Environment Variables
+# ==========================================
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==========================================
+# Next.js (apps/web)
+# ==========================================
+apps/web/.next/
+apps/web/out/
+apps/web/build/
+
+# ==========================================
+# Foundry & Solidity
+# ==========================================
+foundry/cache/
+foundry/out/
+foundry/broadcast/*/31337/
+foundry/broadcast/**/dry-run/
+# Keep broadcast folder structure
+!foundry/broadcast
+foundry/docs/
+
+# ==========================================
+# Build & Production
+# ==========================================
+dist/
+build/
+coverage/
+*.cache
+*.tmp
+
+# ==========================================
+# TypeScript
+# ==========================================
+*.tsbuildinfo
+next-env.d.ts
+
+# ==========================================
+# Logs & Debug
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
+# IDEs & Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# OS Files
+# ==========================================
+.DS_Store
+Thumbs.db
+*.pem
+
+# ==========================================
+# Deployment
+# ==========================================
+.vercel
+
+# ==========================================
+# Tools
+# ==========================================
+.claude/

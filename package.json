@@ -1,0 +1,14 @@
+{
+  "name": "aero-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd apps/web && pnpm dev",
+    "build:contracts": "cd foundry && forge build",
+    "build:web": "cd apps/web && pnpm build",
+    "test": "cd foundry && forge test -vvv",
+    "anvil": "cd foundry && anvil",
+    "sync-abis": "pnpm build:contracts && node scripts/sync-abis.js",
+    "clean": "cd foundry && forge clean"
+  }
+}
