@@ -3,12 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cd apps/web && pnpm dev",
+    "dev": "pnpm --filter web dev",
     "build:contracts": "cd foundry && forge build",
-    "build:web": "cd apps/web && pnpm build",
+    "build:web": "pnpm --filter web build",
+    "build": "pnpm build:contracts && pnpm build:web",
     "test": "cd foundry && forge test -vvv",
     "anvil": "cd foundry && anvil",
     "sync-abis": "pnpm build:contracts && node scripts/sync-abis.js",
-    "clean": "cd foundry && forge clean"
+    "clean": "cd foundry && forge clean",
+    "lint": "pnpm --filter web lint",
+    "type-check": "pnpm --filter web type-check",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx}": [
+      "pnpm --filter web eslint --fix"
+    ]
   }
 }

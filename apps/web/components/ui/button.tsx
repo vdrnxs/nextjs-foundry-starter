@@ -36,13 +36,20 @@ const buttonVariants = cva(
   }
 )
 
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+  size?: "default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-lg"
+  asChild?: boolean
+}
+
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant,
+  size,
   asChild = false,
   ...props
-}) {
+}: ButtonProps) {
   const Comp = asChild ? Slot : "button"
 
   return (
