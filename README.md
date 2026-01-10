@@ -61,14 +61,14 @@ A production-ready starter for building decentralized applications with the late
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone --recurse-submodules <repository-url>
 cd aero
 
 # Install dependencies
 pnpm install
 
-# Initialize Foundry submodules
-cd foundry && forge install
+# If you forgot --recurse-submodules during clone:
+git submodule update --init --recursive
 ```
 
 ### Development
