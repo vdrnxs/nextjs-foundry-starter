@@ -124,23 +124,19 @@ pnpm dev
 
 ### Web3 Configuration
 
-1. **Get WalletConnect Project ID** (free):
-   - Visit [cloud.walletconnect.com](https://cloud.walletconnect.com)
-   - Create a project and copy your Project ID
+**Default setup**: Hardhat local network (Chain ID: 31337)
 
-2. **Add to environment**:
-```bash
-cp .env.example .env.local
-# Add: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-```
-
-3. **Use wallet connection** in your components:
+To interact with contracts:
 ```typescript
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useReadContract } from 'wagmi';
+import { CONTRACT_ADDRESS } from '@/lib/config/contract';
 
-export default function Header() {
-  return <ConnectButton />;
-}
+// Read contract data
+const { data } = useReadContract({
+  address: CONTRACT_ADDRESS,
+  abi: YourContractABI,
+  functionName: 'yourFunction',
+});
 ```
 
 ## Project Structure
