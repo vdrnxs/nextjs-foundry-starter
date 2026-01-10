@@ -277,7 +277,8 @@ packages:
 
 ```ini
 # .npmrc
-node-linker=hoisted  # Docker-compatible mode
+# Uses default isolated mode (symlinks)
+# Next.js standalone handles Docker compatibility automatically
 ```
 
 ### Git Hooks
@@ -330,6 +331,7 @@ docker-compose logs -f
 - Solo production dependencies en imagen final
 - Usuario no-root (nextjs:nodejs) para seguridad
 - Tamaño final: ~150-200 MB vs ~600-800 MB sin optimizar
+- **Compatibilidad con pnpm symlinks**: Next.js standalone resuelve automáticamente los symlinks de pnpm durante el build, creando una estructura sin symlinks lista para Docker
 
 ### Development
 
@@ -391,18 +393,24 @@ Dependencies are correctly classified for optimal production builds:
 - Faster installs and cold starts
 - Smaller bundle sizes
 
+**pnpm Configuration**:
+- Uses default `isolated` mode with symlinks for strict dependency management
+- No phantom dependencies: can only import packages declared in `package.json`
+- Next.js `standalone` output automatically resolves symlinks for Docker compatibility
+- Faster installs with content-addressable store and hard links
+
 ### Multi-Stage Docker Build
 
 ```dockerfile
 Stage 1 (Builder):
-  - Installs ALL dependencies (17 packages)
+  - Installs ALL dependencies with pnpm (isolated mode, uses symlinks)
   - Compiles TypeScript → JavaScript
-  - Builds standalone output
+  - Builds Next.js standalone (resolves symlinks, copies real files)
   - ~800 MB (discarded after build)
 
 Stage 2 (Runner):
-  - Copies only compiled build
-  - Only production dependencies
+  - Copies only standalone build (already symlink-free)
+  - Only production dependencies needed at runtime
   - Non-root user (security)
   - ~150-200 MB (75% reduction)
 ```
