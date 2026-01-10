@@ -54,22 +54,43 @@ A production-ready starter for building decentralized applications with the late
 
 - Node.js 20+
 - pnpm 8+
-- Foundry ([installation guide](https://book.getfoundry.sh/getting-started/installation))
 - Docker (optional, for containerized development)
+
+### Installing Foundry
+
+Foundry is required to compile and test smart contracts:
+
+```bash
+# Install foundryup
+curl -L https://foundry.paradigm.xyz | bash
+
+# Run foundryup to install forge, cast, anvil, and chisel
+foundryup
+```
+
+**Windows users:** Use Git BASH or WSL (PowerShell/CMD not supported)
+
+**Verify installation:**
+```bash
+forge --version
+# Should show: forge 0.x.x (...)
+```
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone --recurse-submodules <repository-url>
+# 1. Clone the repository
+git clone <repository-url>
 cd aero
 
-# Install dependencies
+# 2. Install frontend dependencies
 pnpm install
 
-# If you forgot --recurse-submodules during clone:
-git submodule update --init --recursive
+# 3. Initialize Foundry (smart contracts)
+forge init foundry --no-git
 ```
+
+> **Note**: Each developer runs `forge init` locally to get the latest Foundry setup. This ensures everyone uses the most recent version.
 
 ### Development
 
