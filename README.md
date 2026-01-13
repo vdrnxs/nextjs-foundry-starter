@@ -167,38 +167,7 @@ Then configure your wallet to connect to the local node:
 - **Chain ID**: `31337`
 - **Currency Symbol**: ETH
 
-**Connect wallet**:
-```typescript
-import { ConnectButton } from '@/components/connect-button';
-
-// In your component
-<ConnectButton />
-```
-
-The `ConnectButton` component includes:
-- ✅ Loading states during connection
-- ✅ Error handling with user-friendly messages
-- ✅ Automatic address formatting (0x1234...5678)
-- ✅ Hydration-safe rendering (no SSR mismatches)
-
-**Interact with contracts**:
-```typescript
-import { useReadContract, useAccount } from 'wagmi';
-import SimpleTokenABI from '@/lib/contracts/SimpleToken.json';
-
-const CONTRACT_ADDRESS = '0x...'; // Your deployed SimpleToken address
-
-// Read your token balance
-const { address } = useAccount();
-const { data: balance } = useReadContract({
-  address: CONTRACT_ADDRESS,
-  abi: SimpleTokenABI,
-  functionName: 'balanceOf',
-  args: [address],
-});
-```
-
-**Deploy and use the SimpleToken**:
+### Contract Example: SimpleToken
 
 1. **Deploy the contract**:
    ```bash
