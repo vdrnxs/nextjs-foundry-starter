@@ -1,20 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { Button } from '@/components/ui/button';
+import { useHydrationSafe } from '@/hooks/useHydrationSafe';
+import { formatAddress } from '@/lib/web3';
 
 export function ConnectButton() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrationSafe();
   const [error, setError] = useState<string | null>(null);
 
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleConnect = async () => {
     try {
@@ -44,7 +42,7 @@ export function ConnectButton() {
     return (
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">
-          {address?.slice(0, 6)}...{address?.slice(-4)}
+          {formatAddress(address)}
         </span>
         <Button variant="outline" onClick={handleDisconnect}>
           Disconnect

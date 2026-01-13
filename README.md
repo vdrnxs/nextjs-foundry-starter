@@ -39,10 +39,11 @@ A production-ready starter for building decentralized applications with cutting-
 - ⚡ **Next.js 16 + React 19** - Server Components, App Router, and streaming SSR
 - 🎨 **Tailwind CSS v4** - New @theme syntax, OKLCH colors, built-in dark mode
 - 🔗 **Foundry Integration** - Fast Solidity compilation, testing, and ABI sync
-- 🔐 **Web3 Ready** - Wagmi v2 and Viem for wallet connection and contract interaction
+- 🔐 **Web3 Ready** - Wagmi v2 and Viem with error handling, loading states, and network validation
 - 📦 **pnpm Monorepo** - Isolated dependencies with symlink efficiency
 - 🎯 **Type-Safe Development** - End-to-end TypeScript with strict mode
 - 🧩 **shadcn/ui Components** - Copy-paste components you own and customize
+- 🏗️ **SOLID Architecture** - DRY principles, reusable hooks, and separation of concerns
 - 🐳 **Production Docker** - Multi-stage builds (~150MB final image)
 - 🔒 **Code Quality Automation** - Pre-commit hooks with ESLint + Husky
 
@@ -174,6 +175,22 @@ import { ConnectButton } from '@/components/connect-button';
 <ConnectButton />
 ```
 
+The `ConnectButton` component includes:
+- ✅ Loading states during connection
+- ✅ Error handling with user-friendly messages
+- ✅ Automatic address formatting (0x1234...5678)
+- ✅ Hydration-safe rendering (no SSR mismatches)
+
+**Network validation**:
+```typescript
+import { NetworkValidator } from '@/components/network-validator';
+
+// Shows alert if user connects to wrong network
+<NetworkValidator />
+```
+
+Automatically detects if the user is connected to a network other than Chain ID 31337 and displays a warning.
+
 **Interact with contracts**:
 ```typescript
 import { useReadContract, useAccount } from 'wagmi';
@@ -235,12 +252,21 @@ nextjs-foundry-starter/
 │       │   └── page.tsx        # Home page
 │       ├── components/
 │       │   ├── ui/             # shadcn/ui components
-│       │   ├── connect-button.tsx    # Wallet connection
+│       │   │   ├── alert.tsx         # Reusable alert component
+│       │   │   ├── button.tsx        # Button component
+│       │   │   ├── card.tsx          # Card component
+│       │   │   └── dropdown-menu.tsx # Dropdown component
+│       │   ├── connect-button.tsx    # Wallet connection w/ error handling
+│       │   ├── network-validator.tsx # Network validation alert
 │       │   ├── mode-toggle.tsx       # Dark mode toggle
-│       │   └── providers.tsx         # Wagmi + React Query
+│       │   ├── theme-provider.tsx    # Theme context
+│       │   └── providers.tsx         # Wagmi + React Query setup
+│       ├── hooks/
+│       │   └── useHydrationSafe.ts   # SSR hydration hook
 │       ├── lib/
 │       │   ├── contracts/      # Synced ABIs (gitignored)
-│       │   └── utils.ts        # Utilities (cn, etc.)
+│       │   ├── utils.ts        # Utilities (cn, etc.)
+│       │   └── web3.ts         # Web3 constants & utilities
 │       ├── public/             # Static assets
 │       └── package.json        # Frontend dependencies
 │
