@@ -91,7 +91,7 @@ forge --version
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/nextjs-foundry-starter.git
+git clone https://github.com/vdrnxs/nextjs-foundry-starter.git
 cd nextjs-foundry-starter
 
 # Install frontend dependencies
@@ -148,12 +148,12 @@ Key variables:
 - `NEXT_PUBLIC_SIMPLE_TOKEN_ADDRESS` - Deployed SimpleToken address (update after deployment)
 
 **Wagmi v2** is pre-configured with:
-- **Network**: Local development node using Chain ID 31337 (same as Hardhat for compatibility)
+- **Networks**: Local development (Hardhat/Anvil) and Ethereum Mainnet
 - **Connector**: Injected wallet (MetaMask, etc.)
-- **Components**: `ConnectButton` for wallet connection
+- **Components**: `ConnectButton` for wallet connection, `NetworkSwitcher` for changing networks
 - **Configuration**: See [providers.tsx](apps/web/components/providers.tsx) - RPC URL configurable via env vars
 
-> **Note**: Wagmi uses the `hardhat` chain configuration (from `wagmi/chains`) because both Anvil and Hardhat use Chain ID 31337 by default. This ensures compatibility with tooling and wallets that expect this standard local development chain ID.
+> **Note**: The template includes mainnet as an example of multi-network configuration. For local development, use the Hardhat chain (Chain ID 31337) which works with both Anvil and Hardhat. Add more networks by importing them from `wagmi/chains` and updating the `chains` array and `transports` in [providers.tsx](apps/web/components/providers.tsx:9-16).
 
 **Start Anvil (local development node)**:
 ```bash
@@ -172,57 +172,6 @@ Then configure your wallet to connect to the local node:
 - **Chain ID**: `31337`
 - **Currency Symbol**: ETH
 
-### Contract Example: SimpleToken
-
-1. **Deploy the contract**:
-   ```bash
-   # Make sure Anvil is running in a separate terminal
-   cd foundry
-   forge create src/SimpleToken.sol:SimpleToken \
-     --rpc-url http://localhost:8545 \
-     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
-     --broadcast
-   ```
-
-   **Understanding the output**:
-   ```bash
-   Compiling 1 files with Solc 0.8.28         # Compiling your contract
-   Deployer: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266  # Wallet that deployed
-   Deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3  # ⭐ Contract address (use this!)
-   Transaction hash: 0xc0b87eb...              # Deployment transaction hash
-   ```
-
-   Copy the `Deployed to:` address - you'll need it for the next steps.
-
-   > **Note for advanced users**: For production deployments with multiple contracts or complex setup logic, consider using [Foundry scripts](https://getfoundry.sh/guides/scripting-with-solidity) instead of `forge create`. Scripts are Solidity contracts that provide declarative deployments, dry-run simulation, multi-contract orchestration, and built-in verification—making them the professional standard for complex deployments.
-
-2. **Sync ABIs to frontend**:
-   ```bash
-   # From project root
-   pnpm sync-abis
-   ```
-
-   This copies the contract ABI from `foundry/out/` to `apps/web/lib/contracts/`, making it available to your React components.
-
-3. **Configure the contract address**:
-   ```bash
-   # In apps/web/.env.local
-   NEXT_PUBLIC_SIMPLE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
-   ```
-
-   Replace with your actual deployed contract address.
-
-4. **See it in action**:
-   - Connect your wallet in the UI
-   - Your token balance will display automatically
-   - The balance is read directly from the smart contract using Wagmi
-
-**Optional - Import token in MetaMask**:
-- Open MetaMask → **Assets** tab → **Import tokens**
-- Paste your contract address
-- Token symbol (SIM) and decimals (18) auto-fill
-- You'll see your 1,000,000 SIM tokens in MetaMask
-
 ## Project Structure
 
 ```
@@ -239,7 +188,7 @@ nextjs-foundry-starter/
 │       │   │   ├── card.tsx          # Card component
 │       │   │   └── dropdown-menu.tsx # Dropdown component
 │       │   ├── connect-button.tsx    # Wallet connection w/ error handling
-│       │   ├── token-balance.tsx     # Token balance display
+│       │   ├── network-switcher.tsx  # Network selector dropdown
 │       │   ├── mode-toggle.tsx       # Dark mode toggle
 │       │   ├── theme-provider.tsx    # Theme context
 │       │   └── providers.tsx         # Wagmi + React Query setup
@@ -269,40 +218,144 @@ nextjs-foundry-starter/
 └── pnpm-workspace.yaml         # Workspace definition
 ```
 
-## How It Works
+## Working with Contracts
 
-### Contract-to-Frontend Integration
+### Contract Development Workflow
 
-This template connects your Solidity contracts to your React frontend through a simple pipeline:
+This template provides a streamlined workflow for connecting Solidity contracts to your React frontend:
 
 **Write Solidity** → **Deploy Contract** → **Sync ABIs** → **Import in React**
 
-#### Step-by-Step:
+#### Step-by-Step Guide:
 
-1. **Write contracts** in `foundry/src/` using Solidity
-2. **Deploy contract** with `forge create --broadcast`
-   - Compiles and deploys to Anvil
-   - Generates ABI in `foundry/out/`
-3. **Sync ABIs** with `pnpm sync-abis`
-   - Script copies ABIs from `foundry/out/` to `apps/web/lib/contracts/`
-4. **Import in React**:
-   ```typescript
-   import SimpleTokenABI from '@/lib/contracts/SimpleToken.json'
+1. **Write your contract** in `foundry/src/YourContract.sol`
+   ```solidity
+   // SPDX-License-Identifier: MIT
+   pragma solidity ^0.8.13;
+
+   contract YourContract {
+       function getValue() public pure returns (uint256) {
+           return 42;
+       }
+   }
    ```
-5. **Use with Wagmi hooks**:
-   ```typescript
-   import { useAccount } from 'wagmi'
 
-   const { address } = useAccount()
-   const { data: balance } = useReadContract({
-     address: CONTRACT_ADDRESS,
-     abi: SimpleTokenABI,
-     functionName: 'balanceOf',
-     args: [address],
-   })
+2. **Test your contract** (recommended)
+   ```bash
+   cd foundry
+   forge test -vvv
+   ```
+
+3. **Deploy to local Anvil**
+   ```bash
+   # Make sure Anvil is running (anvil in a separate terminal)
+   cd foundry
+   forge create src/YourContract.sol:YourContract \
+     --rpc-url http://localhost:8545 \
+     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+     --broadcast
+   ```
+
+   **Copy the deployed contract address** from the output (`Deployed to: 0x...`)
+
+4. **Sync ABIs to frontend**
+   ```bash
+   # From project root
+   pnpm sync-abis
+   ```
+   This copies contract ABIs from `foundry/out/` to `apps/web/lib/contracts/`
+
+5. **Use in your React components**
+   ```typescript
+   import { useReadContract } from 'wagmi'
+   import YourContractABI from '@/lib/contracts/YourContract.json'
+
+   const CONTRACT_ADDRESS = '0x...' // Your deployed address
+
+   export function MyComponent() {
+     const { data } = useReadContract({
+       address: CONTRACT_ADDRESS,
+       abi: YourContractABI.abi,
+       functionName: 'getValue',
+     })
+
+     return <div>Value: {data?.toString()}</div>
+   }
    ```
 
 > **Important**: ABIs in `apps/web/lib/contracts/` are build artifacts (gitignored). Always run `pnpm sync-abis` after contract changes.
+
+### Quick Reference
+
+**Common Wagmi Hooks:**
+```typescript
+// Reading contract data
+import { useReadContract } from 'wagmi'
+const { data, isLoading, error } = useReadContract({
+  address: '0x...',
+  abi: YourABI.abi,
+  functionName: 'myFunction',
+  args: [arg1, arg2],
+})
+
+// Writing to contract
+import { useWriteContract } from 'wagmi'
+const { writeContract, isPending } = useWriteContract()
+await writeContract({
+  address: '0x...',
+  abi: YourABI.abi,
+  functionName: 'myFunction',
+  args: [arg1, arg2],
+})
+
+// Getting connected wallet
+import { useAccount } from 'wagmi'
+const { address, isConnected } = useAccount()
+```
+
+**Common Viem Utilities:**
+```typescript
+import { formatUnits, parseUnits, formatEther, parseEther } from 'viem'
+
+// Convert wei to readable format
+formatUnits(1000000000000000000n, 18) // "1.0"
+formatEther(1000000000000000000n)     // "1.0" (shorthand for 18 decimals)
+
+// Convert readable to wei
+parseUnits('1.5', 18)  // 1500000000000000000n
+parseEther('1.5')      // 1500000000000000000n (shorthand)
+```
+
+**Foundry Commands:**
+```bash
+forge build                    # Compile contracts
+forge test                     # Run all tests
+forge test -vvv                # Run tests with detailed output
+forge test --match-test testFoo # Run specific test
+anvil                          # Start local node
+forge create src/Contract.sol:Contract --rpc-url http://localhost:8545 --private-key 0x... --broadcast
+```
+
+**Adding More Networks:**
+
+To add additional networks (Sepolia, Polygon, etc.), update your [providers.tsx](apps/web/components/providers.tsx):
+
+```typescript
+import { hardhat, mainnet, sepolia, polygon } from 'wagmi/chains'
+
+const config = createConfig({
+  chains: [hardhat, mainnet, sepolia, polygon],
+  transports: {
+    [hardhat.id]: http('http://127.0.0.1:8545'),
+    [mainnet.id]: http(), // Public RPC
+    [sepolia.id]: http(), // Public RPC
+    [polygon.id]: http(), // Public RPC
+    // Or use custom RPC: http('https://your-rpc-url.com')
+  },
+})
+```
+
+The `NetworkSwitcher` component will automatically display all configured networks.
 
 ## Deployment
 
@@ -364,6 +417,6 @@ docker-compose logs -f
 
 **Built with modern tools for modern Web3 development**
 
-[⭐ Star on GitHub](https://github.com/yourusername/nextjs-foundry-starter)
+[⭐ Star on GitHub](https://github.com/vdrnxs/nextjs-foundry-starter)
 
 </div>
