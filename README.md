@@ -220,7 +220,9 @@ nextjs-foundry-starter/
 
 ## Working with Contracts
 
-**Write Solidity** → **Deploy** → **Sync ABIs** → **Use in React**
+The template provides a streamlined workflow to connect Solidity contracts with your React frontend. Write and test contracts with Foundry, deploy them locally with Anvil, sync the ABIs, and interact from React using Wagmi hooks.
+
+**Workflow:** Write Solidity → Deploy → Sync ABIs → Use in React
 
 ```bash
 # 1. Write your contract in foundry/src/
@@ -233,7 +235,7 @@ forge create src/YourContract.sol:YourContract \
   --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
   --broadcast
 
-# 4. Copy the deployed address and sync ABIs
+# 4. Sync ABIs to frontend
 cd .. && pnpm sync-abis
 ```
 
@@ -249,22 +251,10 @@ const { data } = useReadContract({
 })
 ```
 
-> **Note**: Always run `pnpm sync-abis` after compiling contracts to sync ABIs to the frontend.
-
-### Quick Reference
-
-**Key Wagmi Hooks:** `useReadContract`, `useWriteContract`, `useAccount`, `useChainId`, `useSwitchChain`
-**Viem Utilities:** `formatEther`, `parseEther`, `formatUnits`, `parseUnits`
-**Foundry Commands:** `forge build`, `forge test`, `forge create`, `anvil`
-
-**Adding Networks:**
-Import chains from `wagmi/chains` and add to [providers.tsx](apps/web/components/providers.tsx:10) config.
-The `NetworkSwitcher` automatically displays all configured networks.
-
-**Documentation:**
-- [Wagmi Hooks](https://wagmi.sh/react/hooks) - Contract interaction
-- [Viem Utilities](https://viem.sh/docs/utilities) - Ethereum utilities
-- [Foundry Book](https://book.getfoundry.sh/) - Smart contract development
+**Resources:**
+- [Wagmi Docs](https://wagmi.sh) - React hooks for Ethereum
+- [Viem Docs](https://viem.sh) - TypeScript utilities
+- [Foundry Book](https://book.getfoundry.sh) - Smart contract tooling
 
 ## Deployment
 
