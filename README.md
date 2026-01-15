@@ -220,70 +220,36 @@ nextjs-foundry-starter/
 
 ## Working with Contracts
 
-### Contract Development Workflow
+**Write Solidity** → **Deploy** → **Sync ABIs** → **Use in React**
 
-This template provides a streamlined workflow for connecting Solidity contracts to your React frontend:
+```bash
+# 1. Write your contract in foundry/src/
+# 2. Test it
+cd foundry && forge test -vvv
 
-**Write Solidity** → **Deploy Contract** → **Sync ABIs** → **Import in React**
+# 3. Deploy to Anvil (make sure it's running)
+forge create src/YourContract.sol:YourContract \
+  --rpc-url http://localhost:8545 \
+  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+  --broadcast
 
-#### Step-by-Step Guide:
+# 4. Copy the deployed address and sync ABIs
+cd .. && pnpm sync-abis
+```
 
-1. **Write your contract** in `foundry/src/YourContract.sol`
-   ```solidity
-   // SPDX-License-Identifier: MIT
-   pragma solidity ^0.8.13;
+**Use in React:**
+```typescript
+import { useReadContract } from 'wagmi'
+import YourContractABI from '@/lib/contracts/YourContract.json'
 
-   contract YourContract {
-       function getValue() public pure returns (uint256) {
-           return 42;
-       }
-   }
-   ```
+const { data } = useReadContract({
+  address: '0x...', // Your deployed address
+  abi: YourContractABI.abi,
+  functionName: 'getValue',
+})
+```
 
-2. **Test your contract** (recommended)
-   ```bash
-   cd foundry
-   forge test -vvv
-   ```
-
-3. **Deploy to local Anvil**
-   ```bash
-   # Make sure Anvil is running (anvil in a separate terminal)
-   cd foundry
-   forge create src/YourContract.sol:YourContract \
-     --rpc-url http://localhost:8545 \
-     --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
-     --broadcast
-   ```
-
-   **Copy the deployed contract address** from the output (`Deployed to: 0x...`)
-
-4. **Sync ABIs to frontend**
-   ```bash
-   # From project root
-   pnpm sync-abis
-   ```
-   This copies contract ABIs from `foundry/out/` to `apps/web/lib/contracts/`
-
-5. **Use in your React components**
-   ```typescript
-   import { useReadContract } from 'wagmi'
-   import YourContractABI from '@/lib/contracts/YourContract.json'
-
-   const CONTRACT_ADDRESS = '0x...' // Your deployed address
-
-   export function MyComponent() {
-     const { data } = useReadContract({
-       address: CONTRACT_ADDRESS,
-       abi: YourContractABI.abi,
-       functionName: 'getValue',
-     })
-
-     return <div>Value: {data?.toString()}</div>
-   }
-   ```
-
-> **Important**: ABIs in `apps/web/lib/contracts/` are build artifacts (gitignored). Always run `pnpm sync-abis` after contract changes.
+> **Note**: Always run `pnpm sync-abis` after compiling contracts to sync ABIs to the frontend.
 
 ### Quick Reference
 
