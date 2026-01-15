@@ -287,14 +287,13 @@ docker-compose up -d
 docker-compose logs -f
 ```
 
-**Optimizations included**:
-- Multi-stage build (builder → runner)
-- Next.js standalone output (~75% smaller)
-- Only production dependencies in final image
+**Optimizations:**
+- Multi-stage build for smaller final images
+- Next.js standalone output
+- Production dependencies only
 - Non-root user for security
-- **Final size**: ~150-200 MB (vs ~600-800 MB unoptimized)
 
-> **Development**: Use `pnpm dev` locally (not Docker). Docker adds unnecessary overhead for local development.
+> **Note**: Use `pnpm dev` for local development. Docker is optimized for production deployments.
 
 ## Resources
 
