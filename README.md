@@ -187,17 +187,36 @@ Then configure your wallet to connect to the local node:
    Transaction hash: 0xc0b87eb...              # Deployment transaction hash
    ```
 
-   Copy the `Deployed to:` address - you'll need it for MetaMask and your frontend code.
+   Copy the `Deployed to:` address - you'll need it for the next steps.
 
    > **Note for advanced users**: For production deployments with multiple contracts or complex setup logic, consider using [Foundry scripts](https://getfoundry.sh/guides/scripting-with-solidity) instead of `forge create`. Scripts are Solidity contracts that provide declarative deployments, dry-run simulation, multi-contract orchestration, and built-in verification—making them the professional standard for complex deployments.
 
-2. **Import token in MetaMask**:
-   - Open MetaMask → **Assets** tab
-   - Scroll down → **Import tokens**
-   - Paste your contract address
-   - Token symbol (SIM) and decimals (18) auto-fill
-   - Click **Add custom token**
-   - You'll see your 1,000,000 SIM tokens
+2. **Sync ABIs to frontend**:
+   ```bash
+   # From project root
+   pnpm sync-abis
+   ```
+
+   This copies the contract ABI from `foundry/out/` to `apps/web/lib/contracts/`, making it available to your React components.
+
+3. **Configure the contract address**:
+   ```bash
+   # In apps/web/.env.local
+   NEXT_PUBLIC_SIMPLE_TOKEN_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3
+   ```
+
+   Replace with your actual deployed contract address.
+
+4. **See it in action**:
+   - Connect your wallet in the UI
+   - Your token balance will display automatically
+   - The balance is read directly from the smart contract using Wagmi
+
+**Optional - Import token in MetaMask**:
+- Open MetaMask → **Assets** tab → **Import tokens**
+- Paste your contract address
+- Token symbol (SIM) and decimals (18) auto-fill
+- You'll see your 1,000,000 SIM tokens in MetaMask
 
 ## Project Structure
 
